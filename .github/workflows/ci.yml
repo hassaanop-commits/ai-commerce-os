@@ -41,6 +41,16 @@ jobs:
       # workflow correct on its own if that ever changes to respect an
       # already-set value instead.
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/ai_commerce_os_test
+      # backend/.env is gitignored, so it doesn't exist on the runner --
+      # Settings.cookie_secure defaults to True (correct for real
+      # deployments), which marks the session cookie Secure and makes it
+      # get silently dropped over the TestClient's plain http://, failing
+      # every test that logs in and then calls an authenticated endpoint.
+      # Locally, backend/.env sets COOKIE_SECURE=false for the same
+      # http-only-dev reason (see backend/.env.example) -- this mirrors
+      # that here. The Settings default itself stays True; this is a
+      # CI-environment-only override, not a production behavior change.
+      COOKIE_SECURE: "false"
     steps:
       - uses: actions/checkout@v4
 
