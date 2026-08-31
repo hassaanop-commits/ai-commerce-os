@@ -40,7 +40,8 @@ billing enforcement, no real marketplace OAuth beyond the manual adapter).
 
 ```
 ai-commerce-os/
-├── docs/           # Architecture documentation
+├── docs/           # Architecture documentation, backup/restore
+├── scripts/        # backup_db.sh / restore_db.sh (see docs/backups.md)
 ├── frontend/       # Next.js (TypeScript, App Router)
 ├── backend/        # FastAPI application
 │   └── app/
@@ -53,6 +54,11 @@ ai-commerce-os/
 ├── docker-compose.yml  # Local PostgreSQL for development
 └── .env.example        # Env vars consumed by docker-compose
 ```
+
+Every request is tagged with a correlation ID and logged as structured JSON
+(`app/core/request_context.py`, `app/core/logging.py`) — see the module docstrings for
+details. Database backup/restore is a documented, scripted manual process, not an
+automated job (no background workers) — see [docs/backups.md](docs/backups.md).
 
 ## Prerequisites
 

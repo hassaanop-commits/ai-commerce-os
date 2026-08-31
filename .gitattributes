@@ -1,0 +1,6 @@
+# Shell scripts must stay LF regardless of the checking-out platform's
+# core.autocrlf -- a CRLF-converted shebang/script body breaks execution
+# under bash (Git Bash, WSL, Linux, macOS) even though it looks harmless in
+# an editor. Scoped narrowly rather than repo-wide so this doesn't change
+# line-ending behavior for anything else.
+scripts/*.sh text eol=lf

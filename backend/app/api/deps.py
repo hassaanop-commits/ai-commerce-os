@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import Cookie, Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy.orm import joinedload
 
@@ -33,6 +33,7 @@ def get_current_user(session: Annotated[SessionModel, Depends(get_current_sessio
 
 def get_organization_membership(
     org_id: uuid.UUID,
+    request: Request,
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[DBSession, Depends(get_db)],
 ) -> OrganizationMember:
@@ -47,6 +48,13 @@ def get_organization_membership(
     )
     if membership is None or membership.status != "active":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a member of this organization")
+    # Stashed on request.state (shared ASGI scope, not a contextvar) so it
+    # survives this sync dependency's own threadpool call -- see the note in
+    # app.core.logging. RequestIDMiddleware reads it back for log
+    # correlation. Only reached once membership is actually verified, so a
+    # request that never authenticates/authorizes into an org correctly
+    # logs no organization_id rather than an unverified one.
+    request.state.organization_id = str(org_id)
     return membership
 
 

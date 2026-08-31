@@ -48,3 +48,8 @@ Thumbs.db
 .mypy_cache/
 .ruff_cache/
 coverage/
+
+# Database backups (see scripts/backup_db.sh, docs/backups.md) -- local
+# dump files can contain real data and must never be committed.
+/backups/
+*.dump

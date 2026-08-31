@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi import HTTPException
+from starlette.requests import Request
 
 from app.api.deps import (
     get_current_session,
@@ -12,6 +13,14 @@ from app.api.deps import (
     require_owner,
 )
 from app.services.sessions import create_session, revoke_session
+
+
+def _fake_request() -> Request:
+    # get_organization_membership only touches request.state (to stash the
+    # resolved org ID for log correlation -- see app.core.request_context),
+    # so a bare HTTP-typed scope is enough; these unit tests call the
+    # dependency function directly rather than through the real ASGI stack.
+    return Request(scope={"type": "http"})
 
 
 # ---- authentication dependency ----------------------------------------------
@@ -72,7 +81,7 @@ def test_active_membership_returns_context(db, make_user, make_organization, mak
     org = make_organization()
     membership = make_membership(org, user, role_key="member")
 
-    result = get_organization_membership(org_id=org.id, current_user=user, db=db)
+    result = get_organization_membership(org_id=org.id, request=_fake_request(), current_user=user, db=db)
 
     assert result.id == membership.id
     assert result.organization_id == org.id
@@ -84,7 +93,7 @@ def test_inactive_membership_rejected(db, make_user, make_organization, make_mem
     make_membership(org, user, role_key="member", status="invited")
 
     with pytest.raises(HTTPException) as exc_info:
-        get_organization_membership(org_id=org.id, current_user=user, db=db)
+        get_organization_membership(org_id=org.id, request=_fake_request(), current_user=user, db=db)
 
     assert exc_info.value.status_code == 403
 
@@ -94,7 +103,7 @@ def test_non_member_rejected(db, make_user, make_organization):
     org = make_organization()
 
     with pytest.raises(HTTPException) as exc_info:
-        get_organization_membership(org_id=org.id, current_user=user, db=db)
+        get_organization_membership(org_id=org.id, request=_fake_request(), current_user=user, db=db)
 
     assert exc_info.value.status_code == 403
 
@@ -106,7 +115,7 @@ def test_cross_organization_access_rejected(db, make_user, make_organization, ma
     make_membership(org_a, user, role_key="owner")
 
     with pytest.raises(HTTPException) as exc_info:
-        get_organization_membership(org_id=org_b.id, current_user=user, db=db)
+        get_organization_membership(org_id=org_b.id, request=_fake_request(), current_user=user, db=db)
 
     assert exc_info.value.status_code == 403
 
@@ -121,7 +130,7 @@ def test_owner_authorization(db, make_user, make_organization, make_membership):
 
     assert require_owner(membership=membership).id == membership.id
     assert require_admin(membership=membership).id == membership.id
-    assert require_member(org_id=org.id, current_user=user, db=db).id == membership.id
+    assert require_member(org_id=org.id, request=_fake_request(), current_user=user, db=db).id == membership.id
 
 
 def test_admin_authorization(db, make_user, make_organization, make_membership):
@@ -140,7 +149,7 @@ def test_member_authorization(db, make_user, make_organization, make_membership)
     org = make_organization()
     membership = make_membership(org, user, role_key="member")
 
-    assert require_member(org_id=org.id, current_user=user, db=db).id == membership.id
+    assert require_member(org_id=org.id, request=_fake_request(), current_user=user, db=db).id == membership.id
     with pytest.raises(HTTPException) as exc_info:
         require_admin(membership=membership)
     assert exc_info.value.status_code == 403
