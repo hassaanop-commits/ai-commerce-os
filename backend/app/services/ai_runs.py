@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session as DBSession
 
 from app.db.tenant import org_scoped
@@ -22,6 +23,7 @@ SANITIZED_ERROR_CATEGORIES = frozenset(
         "invalid_response",
         "capability_not_supported",
         "content_policy_violation",
+        "ai_spend_limit_exceeded",
         "unknown_error",
     }
 )
@@ -52,6 +54,28 @@ def describe_error_category(category: str | None) -> str | None:
 
 class AIRunNotFoundError(Exception):
     pass
+
+
+def _current_period_start() -> datetime:
+    # Calendar month, UTC -- the simplest period boundary that needs no new
+    # column to compute: AIRun.created_at already exists on every row, so
+    # "this org's spend so far this month" is just a sum with a date filter.
+    now = datetime.now(timezone.utc)
+    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+def get_current_period_spend_usd(db: DBSession, organization_id: uuid.UUID) -> Decimal:
+    """Sum of AIRun.cost_usd for this organization since the start of the
+    current calendar month (UTC). Backs the optional per-org monthly AI
+    spend cap (see app.ai.tools._common.start_and_call) -- derived entirely
+    from existing AIRun rows, no dedicated tracking column or table."""
+    period_start = _current_period_start()
+    total = db.execute(
+        select(func.coalesce(func.sum(AIRun.cost_usd), 0)).where(
+            AIRun.organization_id == organization_id, AIRun.created_at >= period_start
+        )
+    ).scalar_one()
+    return Decimal(total)
 
 
 def create_run(

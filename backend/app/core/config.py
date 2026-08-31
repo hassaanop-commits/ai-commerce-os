@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,6 +30,22 @@ class Settings(BaseSettings):
     ai_max_retries: int = 3
     ai_retry_initial_delay_seconds: float = 0.5
     ai_retry_max_delay_seconds: float = 8.0
+
+    # In-memory sliding-window throttle for auth endpoints (login, signup,
+    # password-reset-request) -- see app.core.rate_limit. Per scope, up to
+    # this many attempts within the trailing window, keyed independently by
+    # client IP and by account identifier (email). Single-instance-only:
+    # state lives in process memory and resets on restart / doesn't
+    # coordinate across multiple workers -- an accepted limitation for now.
+    auth_rate_limit_max_attempts: int = 10
+    auth_rate_limit_window_seconds: float = 60.0
+
+    # Optional per-organization monthly AI spend ceiling in USD, derived from
+    # the sum of AIRun.cost_usd for the current calendar month (UTC) -- no
+    # dedicated column/table. None (default) means unlimited, so existing
+    # behavior/tests are unaffected unless an operator opts in by setting
+    # AI_ORG_MONTHLY_SPEND_LIMIT_USD.
+    ai_org_monthly_spend_limit_usd: Decimal | None = None
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

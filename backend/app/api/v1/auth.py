@@ -9,6 +9,7 @@ from app.api.deps import get_current_session, get_current_user
 from app.api.http_utils import client_ip
 from app.core.cookies import clear_csrf_cookie, clear_session_cookie, set_csrf_cookie, set_session_cookie
 from app.core.csrf import generate_csrf_token
+from app.core.rate_limit import enforce_auth_rate_limit
 from app.db.session import get_db
 from app.models import Session as SessionModel
 from app.models import User
@@ -47,6 +48,7 @@ def signup(
     db: Annotated[DBSession, Depends(get_db)],
     email_service: Annotated[EmailService, Depends(get_email_service)],
 ) -> User:
+    enforce_auth_rate_limit(request, scope="signup", identifier=payload.email)
     try:
         user = auth_service.signup(
             db,
@@ -73,6 +75,7 @@ def login(
     response: Response,
     db: Annotated[DBSession, Depends(get_db)],
 ) -> User:
+    enforce_auth_rate_limit(request, scope="login", identifier=payload.email)
     user = auth_service.authenticate(db, email=payload.email, password=payload.password)
     if user is None:
         record_event(
@@ -129,6 +132,7 @@ def forgot_password(
     db: Annotated[DBSession, Depends(get_db)],
     email_service: Annotated[EmailService, Depends(get_email_service)],
 ) -> dict[str, str]:
+    enforce_auth_rate_limit(request, scope="password_reset_request", identifier=payload.email)
     auth_service.request_password_reset(db, email_service, payload.email, ip_address=client_ip(request))
     return {"detail": "If that email is registered, a password reset link has been sent."}
 

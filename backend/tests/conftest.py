@@ -15,6 +15,7 @@ from app.ai.providers import get_default_ai_provider, get_default_image_provider
 from app.ai.providers.mock_provider import MockProvider
 from app.core.config import settings
 from app.core.csrf import CSRF_HEADER_NAME, generate_csrf_token
+from app.core.rate_limit import reset_auth_rate_limits
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
@@ -56,6 +57,18 @@ def _seed_roles(engine):
         )
         session.commit()
     session.close()
+
+
+@pytest.fixture(autouse=True)
+def _reset_auth_rate_limits():
+    # The limiter is a module-level singleton (see app.core.rate_limit) so
+    # its state persists across tests unless cleared. TestClient always
+    # connects as the same "testclient" host, so without this every test
+    # after the first ~10 auth requests in the whole suite would start
+    # tripping the rate limit regardless of which test it's in.
+    reset_auth_rate_limits()
+    yield
+    reset_auth_rate_limits()
 
 
 @pytest.fixture(autouse=True)

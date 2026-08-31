@@ -90,6 +90,29 @@ def start_and_call(
     attempts it took -- retries happen inside this single run's lifecycle,
     never as separate AIRun rows.
     """
+    spend_limit = settings.ai_org_monthly_spend_limit_usd
+    if spend_limit is not None and ai_runs.get_current_period_spend_usd(db, organization_id) >= spend_limit:
+        # Blocked before the provider is ever called, so this costs nothing.
+        # Still recorded as a (zero-cost) failed run rather than just raising
+        # an HTTP error directly -- same treatment as every other failure
+        # category, so the block shows up in AI Studio history/audit like
+        # anything else that stopped a generation, instead of vanishing.
+        blocked_run = ai_runs.create_run(
+            db,
+            organization_id,
+            run_type=run_type,
+            provider=provider.name,
+            model=model,
+            user_id=user_id,
+            related_entity_type=related_entity_type,
+            related_entity_id=related_entity_id,
+            workflow_id=workflow_id,
+        )
+        db.commit()
+        ai_runs.fail_run(db, blocked_run, category="ai_spend_limit_exceeded")
+        db.commit()
+        raise ToolExecutionError(blocked_run.id, "ai_spend_limit_exceeded")
+
     # Each AIRun's lifecycle is committed independently of the caller's own
     # transaction (same reasoning as app.services.audit.record_event): a
     # provider invocation must be durably recorded for cost/usage tracking
