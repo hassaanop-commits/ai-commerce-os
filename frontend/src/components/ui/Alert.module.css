@@ -1,0 +1,26 @@
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+}
+
+.error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: rgba(220, 38, 38, 0.15);
+}
+
+.success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border-color: rgba(22, 163, 74, 0.15);
+}
+
+.info {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  border-color: rgba(79, 70, 229, 0.15);
+}

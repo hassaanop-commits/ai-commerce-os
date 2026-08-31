@@ -1,0 +1,33 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 880px;
+}
+
+.heading h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.lede {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.emptyState h2 {
+  font-size: 16px;
+}
+
+.emptyState p {
+  color: var(--color-text-muted);
+  font-size: 13.5px;
+  max-width: 52ch;
+}

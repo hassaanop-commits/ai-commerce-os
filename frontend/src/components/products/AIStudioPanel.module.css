@@ -1,0 +1,186 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header h2 {
+  font-size: 16px;
+}
+
+.lede {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  max-width: 480px;
+}
+
+.card {
+  align-items: stretch;
+  max-width: 560px;
+  gap: 14px;
+}
+
+.status {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.draft {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--color-border);
+}
+
+.draftBadge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.section h3 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.section p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.imageForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imagePreview {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-hover);
+  display: block;
+}
+
+.imageActions {
+  display: flex;
+  gap: 8px;
+}
+
+.variationsLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.variationsLabel select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 13px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.variationsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.failedSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 160px;
+  padding: 16px;
+  border: 1px dashed var(--color-danger-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-soft);
+}
+
+.failedBadge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-danger);
+}
+
+.failedMessage {
+  font-size: 13px;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.variationCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.historyRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.historyRowHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.historyType {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.historyTime {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  margin-left: auto;
+}
+
+.historyError {
+  font-size: 12.5px;
+  color: var(--color-danger);
+}

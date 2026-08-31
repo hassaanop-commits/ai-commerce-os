@@ -1,0 +1,18 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.links {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+.forgotLink {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  margin-bottom: 16px;
+}

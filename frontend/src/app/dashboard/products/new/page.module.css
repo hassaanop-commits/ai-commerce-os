@@ -1,0 +1,22 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.backLink {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.card h1 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.lede {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}

@@ -1,0 +1,111 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imageWrap {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-hover);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.primaryBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--color-accent);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.statusWrap {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.approvalWrap {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+
+.sourceWrap {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.promptWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.promptToggle {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-accent-hover);
+  cursor: pointer;
+}
+
+.promptText {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-hover);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actions button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.actions button:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.actions .danger {
+  color: var(--color-danger);
+  border-color: var(--color-danger-soft);
+}

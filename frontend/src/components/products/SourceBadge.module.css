@@ -1,0 +1,31 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.upload {
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+}
+
+.ai_generated {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+.processed {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.default {
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+}

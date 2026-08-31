@@ -1,0 +1,48 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.draft,
+.pending {
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+}
+
+.active,
+.ready,
+.succeeded {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.processing,
+.approved,
+.publishing,
+.running {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+.archived,
+.ended {
+  background: var(--color-surface-hover);
+  color: var(--color-text-faint);
+}
+
+.failed,
+.error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.default {
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+}
