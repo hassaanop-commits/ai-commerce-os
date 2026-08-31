@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     # AI_ORG_MONTHLY_SPEND_LIMIT_USD.
     ai_org_monthly_spend_limit_usd: Decimal | None = None
 
+    # Optional error-tracking sink (see app/core/sentry.py). Same pattern as the AI
+    # provider keys above: unset means the feature is simply inactive --
+    # sentry_sdk.init() is never called, so local dev without a DSN and the
+    # full test suite never attempt to init or phone home.
+    sentry_dsn: str | None = None
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

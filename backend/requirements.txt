@@ -13,3 +13,4 @@ python-multipart==0.0.32
 langgraph==0.6.11
 anthropic==0.75.0
 google-genai==2.18.1
+sentry-sdk[fastapi]==2.68.1

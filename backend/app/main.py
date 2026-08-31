@@ -5,8 +5,10 @@ from app.core.config import settings
 from app.core.csrf import CSRFMiddleware
 from app.core.logging import configure_logging
 from app.core.request_context import RequestIDMiddleware
+from app.core.sentry import configure_sentry
 
 configure_logging()
+configure_sentry()
 
 app = FastAPI(title="AI Commerce OS API")
 
