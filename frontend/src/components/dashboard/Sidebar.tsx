@@ -5,15 +5,22 @@ import { usePathname } from "next/navigation";
 import styles from "./Sidebar.module.css";
 
 const NAV_ITEMS = [
-  { label: "Overview", href: "/dashboard", enabled: true },
-  { label: "Products", href: "/dashboard/products", enabled: true },
-  { label: "AI Studio", href: "/dashboard/ai-studio", enabled: false },
-  { label: "Listings", href: "/dashboard/listings", enabled: false },
-  { label: "Marketplaces", href: "/dashboard/marketplaces", enabled: false },
-  { label: "Analytics", href: "/dashboard/analytics", enabled: false },
-  { label: "Team", href: "/dashboard/team", enabled: false },
-  { label: "Settings", href: "/dashboard/settings", enabled: false },
-  { label: "Billing", href: "/dashboard/billing", enabled: false },
+  { label: "Overview", href: "/dashboard", enabled: true, highlightWhenActive: true },
+  { label: "Products", href: "/dashboard/products", enabled: true, highlightWhenActive: true },
+  // AI Studio and Listings are real, tested features -- they just don't have their own
+  // top-level route yet, living instead as tabs on a product's detail page
+  // (/dashboard/products/[id]). Rather than mark them "Soon" (they aren't) or link
+  // somewhere that doesn't exist, these point at the product list -- where you'd land
+  // to open one anyway -- with a label that says so upfront. highlightWhenActive is off
+  // for both so they don't fight the real "Products" item for the active-state
+  // highlight, since all three share the same href.
+  { label: "AI Studio (open a product)", href: "/dashboard/products", enabled: true, highlightWhenActive: false },
+  { label: "Listings (open a product)", href: "/dashboard/products", enabled: true, highlightWhenActive: false },
+  { label: "Marketplaces", href: "/dashboard/marketplaces", enabled: false, highlightWhenActive: false },
+  { label: "Analytics", href: "/dashboard/analytics", enabled: false, highlightWhenActive: false },
+  { label: "Team", href: "/dashboard/team", enabled: false, highlightWhenActive: false },
+  { label: "Settings", href: "/dashboard/settings", enabled: false, highlightWhenActive: false },
+  { label: "Billing", href: "/dashboard/billing", enabled: false, highlightWhenActive: false },
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -35,7 +42,8 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               );
             }
             const isActive =
-              item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
+              item.highlightWhenActive &&
+              (item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href));
             return (
               <li key={item.label}>
                 <Link
