@@ -93,6 +93,21 @@ against a live provider needs an API key set in `backend/.env` — see the comme
 `backend/.env.example` for exactly which variables matter and what an unset key does
 (a clean "not configured" error, not a crash).
 
+### Running the full stack in Docker
+
+`docker-compose.yml` (above) stays Postgres-only, for native `--reload`/hot-reload dev.
+To run the whole containerized stack instead — production-style multi-stage images for
+both apps, a non-root user, migrations applied automatically on backend startup — use
+the separate compose file:
+
+```
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Backend on `:8000`, frontend on `:3000`. See `backend/Dockerfile`, `frontend/Dockerfile`,
+and the comments in `docker-compose.prod.yml` for what each stage does and why this is a
+second file rather than folded into the one above.
+
 ## Tests
 
 ```

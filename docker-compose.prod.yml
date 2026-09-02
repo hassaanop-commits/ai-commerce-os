@@ -1,0 +1,81 @@
+# Full containerized stack: Postgres + the backend and frontend images
+# built from backend/Dockerfile and frontend/Dockerfile. Deliberately a
+# separate file from docker-compose.yml rather than added services in it:
+# that file's whole job today is "just Postgres, so the backend/frontend
+# can run natively with --reload/hot-reload" (see README.md), and
+# `docker compose up -d` with no -f flag is the exact command the README
+# already tells people to run for that. Folding backend/frontend in there
+# would make that same command silently start building two images and
+# binding ports 8000/3000 -- a behavior change for anyone already running
+# this repo the documented way, and a straight port collision for anyone
+# who then also starts `uvicorn --reload` / `npm run dev` on those same
+# ports. A second, explicitly-named file keeps the existing workflow
+# byte-for-byte unchanged and makes the full-stack path opt-in:
+#
+#   docker compose -f docker-compose.prod.yml up --build
+#
+# The postgres service below intentionally mirrors docker-compose.yml's
+# rather than sharing it via `include:`/`extends:` -- small enough (a dozen
+# lines) that a second copy is cheaper to read than a cross-file reference,
+# and this file can be understood/run in complete isolation.
+#
+# Secrets (ANTHROPIC_API_KEY etc.) are read from the shell/.env, never
+# hardcoded here -- see backend/.env.example for what each one does.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ai_commerce_os}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ai_commerce_os}
+      # true (HTTPS-only cookies) is the production-safe default -- same
+      # reasoning as backend/.env.example. Override to false only if you're
+      # smoke-testing this stack over plain http://localhost, the same
+      # local-dev exception documented there.
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      AI_DEFAULT_PROVIDER: ${AI_DEFAULT_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      # A build arg, not a runtime `environment:` entry -- NEXT_PUBLIC_*
+      # variables are inlined by Next.js at build time (see
+      # frontend/Dockerfile's builder-stage comment for how this was
+      # actually verified, not assumed); a runtime environment: entry here
+      # would silently do nothing. The frontend's own server (not the
+      # browser) talks to the backend directly over the compose network by
+      # service name -- see the rewrites() comment in frontend/next.config.js.
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:8000
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_prod_data:

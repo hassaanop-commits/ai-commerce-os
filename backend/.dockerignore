@@ -1,0 +1,34 @@
+# Local/host-only artifacts that must never end up in the image.
+.venv/
+venv/
+env/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Secrets -- never baked into an image; real deployments inject these as
+# environment variables instead.
+.env
+.env.*
+!.env.example
+
+# Tests and dev-only tooling -- not needed to run the app.
+tests/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# VCS / editor / OS cruft.
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Local runtime state -- recreated fresh in the image (see Dockerfile).
+var/
+
+# Docs, not needed at runtime.
+README.md
+*.md

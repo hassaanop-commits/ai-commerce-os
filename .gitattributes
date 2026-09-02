@@ -4,3 +4,8 @@
 # an editor. Scoped narrowly rather than repo-wide so this doesn't change
 # line-ending behavior for anything else.
 scripts/*.sh text eol=lf
+# Same reasoning: this one runs as a Docker ENTRYPOINT inside a Linux
+# container (backend/Dockerfile) -- a CRLF shebang there fails with
+# "no such file or directory" at container start, on a Linux image that has
+# no relation to whatever platform built the image.
+backend/*.sh text eol=lf

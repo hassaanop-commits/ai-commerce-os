@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Self-contained server output (.next/standalone) for the production
+  // Docker image (frontend/Dockerfile) -- traces and copies only the
+  // node_modules each page actually needs instead of the whole
+  // node_modules tree, which is what keeps that image slim. Has no effect
+  // on `next dev`/`next start` outside Docker.
+  output: "standalone",
   async rewrites() {
     // Keeps the browser talking to a single origin: Next.js proxies
     // /api/v1/* straight through to FastAPI. That's what makes the session
